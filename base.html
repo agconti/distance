@@ -1,0 +1,90 @@
+<html>
+<head>
+	<title>Distance</title>
+</head>
+<body>
+<h1>Calculating your distance below:</h1>
+<script type="text/javascript" src='d3.min.js'></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script type="text/javascript">
+// var caps = [];
+
+// caps = d3.csv.parse('country_capital.csv');
+//                 //.get(function(error, rows) { console.log(rows); });
+// console.log(caps)
+var input = [],
+    csv_list = [],
+    destinations_start = [],
+    destinations_finish = [],
+    destinations = [
+                    ['Azerbaijan','Baku'],
+                    ['Bahamas','Nassau'],
+                    ['Bahrain','Manama'],
+                    ['Bangladesh','Dhaka'],
+                    ['Barbados','Bridgetown'],
+                    ['Belarus','Minsk'],
+                    ['Belgium','Brussels'],
+                                            ];
+
+for(var i = 1; i < destinations.length; i++){
+        input.push(destinations[i][0] + ", " + destinations[i][1]);
+} 
+console.log(input);
+
+var combinations = function(set, start, finish){
+
+  for(var i = 1; i < set.length; i++){
+    start.push(set[0]);
+    finish.push(set[i]);
+  }
+  set.shift();
+  if(set[1]){
+  combinations(set, start, finish);
+  }
+};
+combinations(input, destinations_start, destinations_finish);
+console.log(destinations_start);
+console.log(destinations_finish);
+
+function calculateDistances(start, finish) {
+  var service = new google.maps.DistanceMatrixService();
+  service.getDistanceMatrix(
+    {
+      origins: start,
+      destinations: finish,
+      travelMode: google.maps.TravelMode.DRIVING,
+      unitSystem: google.maps.UnitSystem.METRIC,
+      avoidHighways: false,
+      avoidTolls: false
+    }, callback);
+}
+
+function callback(response, status) {
+  if (status != google.maps.DistanceMatrixStatus.OK) {
+    alert('Error was: ' + status);
+  } else {
+    var origins = response.originAddresses;
+    var destinations = response.destinationAddresses;
+    var outputDiv = document.getElementById('outputDiv');
+    outputDiv.innerHTML = '';
+    //deleteOverlays();
+
+    for (var i = 0; i < origins.length; i++) {
+      var results = response.rows[i].elements;
+      addMarker(origins[i], false);
+      for (var j = 0; j < results.length; j++) {
+        //addMarker(destinations[j], true);
+        outputDiv.innerHTML += origins[i] + ' to ' + destinations[j]
+            + ': ' + results[j].distance.text + ' in '
+            + results[j].duration.text + '<br>';
+        csv_list.push([origins[i], destinations[j], results[j].distance.text]);
+      }
+    }
+  }
+}
+calculateDistances(destinations_start, destinations_finish);
+console.log(csv_list);
+</script>
+<div id="outputDiv"></div>
+</body>
+</html>
