@@ -57,7 +57,7 @@ function callback(response, status) {
     }
   }
 }
-
+calculateDistances()
 // function addMarker(location, isDestination) {
 //   var icon;
 //   if (isDestination) {

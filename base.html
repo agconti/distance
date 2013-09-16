@@ -17,18 +17,19 @@ var input = [],
     destinations_start = [],
     destinations_finish = [],
     destinations = [
-                    ['Azerbaijan','Baku'],
-                    ['Bahamas','Nassau'],
-                    ['Bahrain','Manama'],
+                    ['Greenwich', 'England'],
+                    ['Stockholm', 'Sweden'],
+                  /*  ['Bahrain','Manama'],
                     ['Bangladesh','Dhaka'],
                     ['Barbados','Bridgetown'],
                     ['Belarus','Minsk'],
-                    ['Belgium','Brussels'],
+                    ['Belgium','Brussels'],*/
                                             ];
 
-for(var i = 1; i < destinations.length; i++){
-        input.push(destinations[i][0] + ", " + destinations[i][1]);
+for(var i = 0; i < destinations.length; i++){
+        input.push(destinations[i][1] + ", " + destinations[i][0]);
 } 
+console.log("input:");
 console.log(input);
 
 var combinations = function(set, start, finish){
@@ -43,7 +44,9 @@ var combinations = function(set, start, finish){
   }
 };
 combinations(input, destinations_start, destinations_finish);
+console.log("start:");
 console.log(destinations_start);
+console.log("finish:");
 console.log(destinations_finish);
 
 function calculateDistances(start, finish) {
@@ -60,6 +63,9 @@ function calculateDistances(start, finish) {
 }
 
 function callback(response, status) {
+  console.log("response:");
+  console.log(response);
+  console.log(status);
   if (status != google.maps.DistanceMatrixStatus.OK) {
     alert('Error was: ' + status);
   } else {
@@ -71,18 +77,36 @@ function callback(response, status) {
 
     for (var i = 0; i < origins.length; i++) {
       var results = response.rows[i].elements;
-      addMarker(origins[i], false);
+      //addMarker(origins[i], false);
       for (var j = 0; j < results.length; j++) {
         //addMarker(destinations[j], true);
         outputDiv.innerHTML += origins[i] + ' to ' + destinations[j]
             + ': ' + results[j].distance.text + ' in '
             + results[j].duration.text + '<br>';
-        csv_list.push([origins[i], destinations[j], results[j].distance.text]);
+        var csv_list_holder = [origins[i], destinations[j], results[j].distance.text];
+        console.log("csv_list_holder:");
+        console.log(csv_list_holder);
+        csv_list.push(csv_list_holder);
+        console.log(csv_list);
       }
     }
   }
 }
-calculateDistances(destinations_start, destinations_finish);
+
+
+for(i = 10; i < destinations_start.length; i += 10){
+  var int = self.setInterval(function(){
+      calculateDistances(
+        destinations_start.slice((i - 10), i), 
+        destinations_finish.slice((i - 10), i));},
+    11000 // 10.1 sec duration
+    );
+  if(i > destinations_start.length){
+    int=window.clearInterval(int);
+  }
+}
+/*calculateDistances(destinations_start,destinations_finish);
+*/console.log("csv_list:");
 console.log(csv_list);
 </script>
 <div id="outputDiv"></div>

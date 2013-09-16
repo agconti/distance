@@ -1,4 +1,4 @@
 distance
 ========
 
-A utility for calculating the distance  between countries.
+A utility for calculating the distance between countries.
